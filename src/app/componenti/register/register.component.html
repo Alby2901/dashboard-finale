@@ -1,1 +1,23 @@
-<p>register works!</p>
+<h1>Resgistrazione!</h1>
+<form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput type="email" name="nome" ngModel required email/>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" name="password" ngModel required password/>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Select</mat-label>
+    <mat-select name="colore" ngModel>
+      <mat-option value="rosso">Rosso</mat-option>
+      <mat-option value="blu">Blu</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Textarea</mat-label>
+    <textarea matInput type="text" name="hobbies" ngModel></textarea>
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" [disabled]="!registerForm.valid">Invia</button>
+</form>
