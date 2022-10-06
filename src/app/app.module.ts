@@ -10,6 +10,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './componenti/login/login.component';
@@ -40,6 +42,8 @@ import { Pagina3Component } from './componenti/pagina3/pagina3.component';
     MatButtonModule,
     MatSidenavModule,
     MatListModule,
+    MatToolbarModule,
+    MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
