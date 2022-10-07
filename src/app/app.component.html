@@ -2,12 +2,18 @@
   <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>My App</span>
+  <span>My App </span>
+  <span *ngIf="this.authService.isAutenticated()"> --> Sei loggato!</span>
+  <span *ngIf="!this.authService.isAutenticated()"> --> NON sei loggato!</span>
   <span class="example-spacer"></span>
-  <button mat-icon-button class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+  <button *ngIf="this.authService.isAutenticated()" (click)="onClickLogout()" mat-icon-button
+  class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
     <mat-icon>logout</mat-icon>
   </button>
-
+  <button *ngIf="!this.authService.isAutenticated()"  (click)="onClickLogin()" mat-icon-button
+  class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+    <mat-icon>login</mat-icon>
+  </button>
 </mat-toolbar>
 
 <h1>APP</h1>

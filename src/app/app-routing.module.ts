@@ -9,11 +9,11 @@ import { Pagina3Component } from './componenti/pagina3/pagina3.component';
 import { RegisterComponent } from './componenti/register/register.component';
 
 const routes: Routes = [
-  {path: '', component: DashboardComponent, canActivate: [AuthGuard], children: [
+  {path: '', component: DashboardComponent, children: [
     {path: '', redirectTo: 'pagina1', pathMatch: 'full'},
     {path: 'pagina1', component: Pagina1Component},
-    {path: 'pagina2', component: Pagina2Component},
-    {path: 'pagina3', component: Pagina3Component},
+    {path: 'pagina2', component: Pagina2Component, canActivate: [AuthGuard]},
+    {path: 'pagina3', component: Pagina3Component, canActivate: [AuthGuard]},
   ]},
   {path: 'register', component: RegisterComponent},
   {path: 'login', component: LoginComponent}
