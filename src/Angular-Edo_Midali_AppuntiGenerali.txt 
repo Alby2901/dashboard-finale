@@ -1,0 +1,58 @@
+Corso Angular
+(i comanti specifici sono racchiusi da backtip => `comando`)
+
+Requisiti: typescripta, javascript, html, css
+
+- Introduzione a Angular
+    - installare node (su linux) 
+        - `sudo apt-get install curl`
+        - `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash`
+        - `sudo apt-get install nodejs`
+        - `node -v `
+    
+    - installare angular (su linux) 
+        - installare CLI 
+          => set di comandi da "terminale" per facilitare la creazione e gestione di delle varie parti di Angular
+          => `npm install -g @angular/cli`
+        - creare un nuovo progetto 
+          => `ng new my-app`
+          'ng' è un comado di CLI
+          'my-app' è il nome del progetto
+    
+    - creare primo progetto
+        - `ng new my-app`
+        - avviare l'applicazione `ng serve` (dalla cartella del progetto)
+
+    - Visual Studio Code Estensioni utili:
+        - Angular language Service
+        - Angular Snippets (v 13)
+        - Angular Essential (V 13)
+        - ESlint
+        - Prettier - Code formatter
+
+- Capire con cosa lavoriamo
+    - I file e le cartelle del progetto
+        - node
+        - ... (da completare)
+
+- Componenti
+    - sono una piccola parte di tutta l'applicazione
+        => header, barra di navigazione, contenuto (a sua volta suddiviso), footer, ecc.
+        => in genere 3 files: typescript, html, css
+
+
+
+
+
+- Data Binding ed eventi
+- Direttive
+- Pipe
+- Service
+- Routing
+- Observable
+- Form
+- Modulo http
+- Registrazione, login e logout
+
+- impostare un app Desktop
+- deploy online
