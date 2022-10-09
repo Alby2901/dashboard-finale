@@ -4,21 +4,21 @@ Corso Angular
 Requisiti: typescripta, javascript, html, css
 
 - Introduzione a Angular
-    - installare node (su linux) 
+    - installare node (su linux)
         - `sudo apt-get install curl`
         - `curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash`
         - `sudo apt-get install nodejs`
         - `node -v `
-    
-    - installare angular (su linux) 
-        - installare CLI 
+
+    - installare angular (su linux)
+        - installare CLI
           => set di comandi da "terminale" per facilitare la creazione e gestione di delle varie parti di Angular
           => `npm install -g @angular/cli`
-        - creare un nuovo progetto 
+        - creare un nuovo progetto
           => `ng new my-app`
           'ng' è un comado di CLI
           'my-app' è il nome del progetto
-    
+
     - creare primo progetto
         - `ng new my-app`
         - avviare l'applicazione `ng serve` (dalla cartella del progetto)
@@ -35,24 +35,572 @@ Requisiti: typescripta, javascript, html, css
         - node
         - ... (da completare)
 
-- Componenti
-    - sono una piccola parte di tutta l'applicazione
-        => header, barra di navigazione, contenuto (a sua volta suddiviso), footer, ecc.
+- Componenti (Lez. 04)
+    - sono piccole parti che vanno a costituire l'applicazione
+        => esempi:header, barra di navigazione, contenuto (a sua volta suddiviso), footer, ecc.
         => in genere 3 files: typescript, html, css
+    - sono dihiarati nel file app.module.ts della sezione "declaration"
+    - dichiarati in automatico utilizzando il comando `ng generate component XXX (ng g c XXX)`
+
+    - Ciclo di vita dei Componenti (Lez. 05)
+        a partire da ngOnInit() fino a ngOnDestroy() il componente passa diversi
+        stadi vi vita che corrispondono alla sua creazione gestione e distruzione e a specifici
+        momenti intercettabili da specifiche funzioni
+
+- Data Binding (lez. 06)
+    - il data binding è il "passaggio" o "legame" di informazioni tra varie parti del sistema
+    - Data Binding tra parte logica (Type script) e visiva (html)
+    - può essere "one way" oppure "two way"
+    - One way
+        - string interpolation (da TS a HTML) (Lez. 07)
+          => collegamento con i dati che mostriamo nell'HTML
+          XXX ("variabile" in TS) => {{ XXX }} ( oggetto in HTML)
+          posso usare metodi: {{ XXX.toUpperCase() }}
+          posso usare l'operatore ternario: `condizione ? parte vera : parte falsa`
+           {{ piove ? apro ombrerllo : non apro ombrello }}
+          NON posso scrivere codice TS
+
+        - property interpolation (da TS a HTML) (Lez. 08)
+          => collegamento con le proprietà degli oggetti del DOM
+          YYY ("variabile" in TS) => < [disabled]="YYY" > (proprietà in HTML)
+          proprietà del DOM => classi, style, proprietà specifiche: img src, disable, ecc.
+
+        - event binding (da TS a HTML) (Lez. 09)
+          => collegare oggetti del DOM ad eventi generati dall'utente
+          esempio: collegare il click su un bottone (HTML) ad una funzione nella logica (TS)
+          <button (click)="onClickLike()">like</button> => function OnClickLike(){ `codice da eseguire` }
+          nella funzione chiamata dall'HTML posso passare un parametro e riprenderlo nella funzione
+            HTLM => <button (click)="onClickLike(parametro)">like</button>
+            TS   => OnClickLike(param){ console.log(param) }
+            Parametro:
+            "this" restituisce tutto il componente HTML
+            "$event" restituisce l'evento
+                => (input)=onInput($event) restituisce ogni carattere inserito
+                => OnInput(event: Event) {
+                    console.log( (<HTMLInputElement>event.trget).value)
+                   }
+                (<HTMLInputElement>event.trget) questo è un CASTING forzato!
+
+    - Two way (Lez. 10)
+        - collegamento bidirezionale tra TS e HTML sullo stesso elemento
+        - si usa per emenpio per collegare un campo di input con la logica:
+          - da TS a HTML => mando all'HTML il valore iniziale (corrente) del campo
+          - da HTML a TS => prendo il dato finale inserito dall'utente per utilizzarlo nella logica
+
+          HTML <input [(ngModel)]="title" />
+          in questo modo colleghiamo un evento, sull'oggetto DOM, di tipo "ngModel"
+          - infatti è tra parentesi come avevamo fatto per il (click) di un bottone -
+          e lo "colleghiamo", mettendolo anche tra parentesi quadre ad un "oggetto" TS
+          in questo caso la variabile "title"
+          Il collegamento è bidirezionale: se cambio il contenuto del campo input in HTML
+          viene mandato il valore a TS e se in TS viene cambiato il valore di "title"
+          viene rimandato a ll'HTML
+          insostanza Two way binding è l'insieme di event binding e property binding!
+
+- Direttive (Lez. 11)
+    sono delle classin che aggiungono comportamenti agli elementi
+    si dividono in 3 categorie:
+     - built-in => ngClass, ngModel, ngStyle => mnodificano il comportamento
+     - attribute (personalizzate) => mnodificano il comportamento o apparenza
+     - structural => *ngIf, *ngFor) => cambiano il DOM aggiungendo o rimuovendo elementi
+
+    *ngIf (Lez. 12)
+        <p *ngIf=" `condizione` ">testo</p> => il paragrafo viene mostrato se la "condizione" è vera
+        la `condizione` in genere è una variabile TS ma può essere anche una espressione
+        che viene calcolata =>  <p *ngIf=" conteggio > 10 ">testo</p>
+
+        Variabile Template: è un riferimento messo in un elemento del DOM che consente
+            di riferirsi a tale elemento, nell'esempio "#bloccoElse" è una VARIABILE TEMPLATE
+            ATTENZIONE! Deve essere però applicato ad un elemento "<ng-template>" che è un
+            elemento apposito riconosciuto e gestito solo da Angular (non è HTML)
+            NON FUNZIONA con gli elemeti HTML!
+
+            <p *ngIf="isVisible; else bloccoElse"> testo se isVisible è vero </p>
+            <ng-template #bloccoElse>
+                <p> testo se isVisible è falso </p>
+            </ng-template>
+
+            Blocco IF THEN ELSE di elemeti nell'HTML con questo metodo che consente di avere
+            più elementi HTML da
+
+            <ng-template *ngIf="isVisible; the bloccoThen else bloccoElse"></ng-template>
+            <ng-template #bloccoThen>
+                <p> testo se "isVisible" è vero </p>
+                <p> testo (o elementi) aggiuntivo </p>
+            </ng-template>
+            <ng-template #bloccoElse>
+                <p> testo se "isVisible" è falso </p>
+                <p> testo (o elementi) aggiuntivo </p>
+            </ng-template>
+
+            ALTERNATIVA MENO CHIARA SE C'E' SOLO UN ELEMENTO
+            <p *ngIf="isVisible"> testo se isVisible è vero </p>
+            <p *ngIf="!isVisible"> testo se isVisible è falso </p>
+
+    *ngFor (Lez. 13)
+        Serve a ripetere elementi HTML
+        *ngFor="let `variabile locale del ciclo` of `array di elementi`;
+            altre cariabili utilizzabili: `index` as i; `count` as cnt;
+                frst as `isFirst`; lst as `isLast`; evn as `isEven`; od as `isOdd`"
+        Esempio
+            <ul>
+                <li *ngFor="let persona of persone">
+                    {{ persona.nome}} => elemento ripetuto, `persona` e visibile solo all'interno del ciclo
+                </li>
+            </ul>
+
+    *ngSwitch (Lez. 14)
+        è un if con opzioni multiple mutualmente esclusive
+        Esempio
+        <div [ngSwitch]="numero"> => `numero` è una variabile che arriva da TS
+            <p *nsSwitchCase="1"> mostro questo testo se numero = 1 </p>
+            <p *nsSwitchCase="2"> mostro questo testo se numero = 2 </p>
+            <p *nsSwitchCase="3"> mostro questo testo se numero = 3 </p>
+            <p *nsSwitchDefault> mostro questo testo se numero diverso da 1,2 o 3 </p>
+        </div>
+
+    ngStyle (Lez. 15)
+        serve a cambiare dinamicamente il valore di una proprietà
+        Esempio
+            <ul>
+                <li *ngFor="let persona of persone">
+                    <div class="cerchio"
+                    [ngStyle]="'background':persona.isOnline ? 'green' : 'red' "
+                    </div>
+                    {{ persona.nome}} {{ persona.cognome}}
+                </li>
+            </ul>
+        In questo esempio ngStyle cambia lo stile CSS della proprietà "backgrounColor"
+        in 'verde' opppure 'rosso' in base al valore del dato 'isOnline' di ciasscuna persona
+        la "proprietà" CSS può essere indicata con il nominativo Angular oppure, tra apici, quello HTML
+        marginBottom oppure 'margin-bottom'
+
+    ngClass (Lez. 16)
+        ESEMPIO
+            <ul>
+                <li *ngFor="let persona of persone">
+                    <div class="cerchio"
+                    [ngClass]="{'cerchioOnline classe2': persona.isOnline, 'cerchioOffline': !persona.isOnline}"
+                    </div>
+                    {{ persona.nome}} {{ persona.cognome}}
+                </li>
+            </ul>
+        In questo esempio viene passata una classe CSS in base al valore (vero o falso) di persona.isOnline
+        le classi applicate posono essere anche più separate da uno spazio (caso "vero")
+        con il ternary operator
+            [ngClass]="{persona.isOnline? 'cerchioOnline classe2': , 'cerchioOffline'}"
+
+- Passare dati da "padre" a "figlio": : @Input ed Property Binding (Lez. 17)
+    nel componente figlio si crea una variabile con il decoratore @Input()
+
+        @Input() data: any; => siamo nella definizione dell'export della classe componente figlio
+
+    nella definizione del componente figlio all'interno del padre si collega la variabile,
+    come property binding, alla variabile padre
+
+        <p> Siamo nell'HTML del componente padre </p>
+        <app-figlio [data]="persone"></app-figlio>
+
+    `persone` è il nome della variabile (che in questo caso è un array) nel componente padre
+    A questo punto nel componente figlio possiamo utilizzare `data` per esempio con string interpolation
+
+        <p> Siamo nell'HTML del componente figlio </p>
+        <div *ngFor="let elemento of data">
+            <p [ngStyle]="{color: elemento.color"> {{elemento.nome}} {{elemento.cognome}} </p>
+        </div>
+
+- Passare dati da "figlio" a "padre": @Output ed Event Binding (Lez. 18)
+
+    nel componente figlio si crea una variabile con il decoratore @Output
+
+        @Output() mandaDatiEvento = new EventEmitter<string>()
+        dato = "Stringa da inviare"
+
+        => siamo nella definizione dell'export della classe componente figlio
+        => <string> indica che verrà mandata fuori una stringa
+
+    nel HTML del componente figlio creamo, per esempio, un bottone per attivare l'invio dei dati
+
+        <button (click)='mandaDati()'> Manda dati </button>
+
+    nel TS del figlio creaio un metodo che attiva l'invio dei dati prendendo il `dato` da inviare
+
+        mandaDati(){
+            this.mandaDatiEvento.emit(this.dato)
+        }
+
+    nel HTML padre dobbiamo indicare che il figlio può inviare tale dato con un evento
+
+        <p> Siamo nell'HTML del componente padre </p>
+        <app-figlio (mandaDatiEvento)="OnriceviDati($event)"></app-figlio>
+
+    nel TS Padre ricevo il dato attraverso la funzione legata all'evento
+
+        OnriceviDati(param: string){
+            console.log(param)
+        }
+
+- VARIABILE TEMPLATE: prendere reference elemento HTML in typescript (Lez. 19)
+    è possibile "leggere" valori degli elementi HTML del componente da TS con il decoratore @ViewChild
+    @ViewChild accede a tutti gli elemeti HTML: se "denominiamo" l'elemento con una Variabile Template
+
+        <input #inputSaluti> Ciao </p>
+
+    la possiamo utilizzare con il devoratore in TS
+
+        @ViewChild(inputSaluti) varInputSaluti!: ElementRef<HTLMInputElemet>
+
+    il suffiso "!" alla variabile "varInputSaluti" serve a TS per accettare che possa essere "undefined"
+    la "varInputSaluti" sarà disponibile solo quando la view sarà stata inizializzata => ngAfterViewInit()
+    se siamo precisi indicando il tipo di ElementRef con <HTLMInputElemet> TS ci aiuterà
+    a identificare le proprietà disponibili
+
+    @ViewChild(inputSaluti) restituisce un elemto con tutte le sue proprietà e quindi, per esempio,
+    per accedere al valore del campo input faremo:
+
+        valoreInput = this.varInputSaluti.nativeElement.value
+
+- Creare una DIRETTIVA (Lez. 20)
+    - creare una semplice direttiva
+        per creare la direttiva utilizziamo il comando `ng g d nomdirettiva`
+        durante la creazione viene automaticamente aggiornato il file app.module.ts
+        la direttiva è una classe con un decoratore specifico @Directive
+        che contiene solo il "selector" che definisce il nome della direttiva => [appNomeDirett]
+        le parentesi quadre sono una particolarità che serve a fare poi il passaggio
+        dei dati alla dirrettiva
+
+        @Directive({
+            selector: '[appNomeDirett]'
+        })
+
+        nel costruttore creiamo la direttiva vera e propria
+
+            constructor(private elemento: ElemetRef){
+                this.elemento.nativeElement.style.background = 'yellow'
+            }
+
+        nel HTML applichiamo la direttiva
+
+            <p appNomeDirett> Ciao sono il paragrafo </p>
+
+        Questa è una assegnazione statica
+        Per una assegnazione "dinamica" possiamo legare
+        l'applicazione della direttiva ad eventi per esempio a "operazioni" del mouse.
+        Per farlo si utilizza un "ascoltatore" che reagisce all'occorrenza
+
+           constructor(private elemento: ElemetRef){
+            }
+
+            cambiaColore(colore: string){
+                this.elemento.nativeElement.style.background = colore
+            }
+
+            @HostListener('mouseenter') onMouseEnter(){
+                this.cambiaColore('blue')
+            }
+
+            @HostListener('mouseleave') onMouseLeave(){
+                this.cambiaColore('transparent')
+            }
+
+        La parte HTML non cambia: il backgroud cambierà quando il mouse entra o esce dal paragrafo
+
+    - passare dati a una direttiva
+        per passare dati alla direttiva dobbiamo utilizzare il meccanismo di @Input()
+
+        nell'export della direttiva aggiungiamo
+
+            @Input() appNomeDirett = ''  => è necessario che la variabile riprenda il nome
+                                            della direttiva perchè la direttiva è anche la proprietà
+                                            che andremo ad applicare all'elemento HTML
+
+        Nel TS della direttiva
+
+            cambiaColore(colore: string){
+                this.elemento.nativeElement.style.background = colore
+            }
+
+            @HostListener('mouseenter') onMouseEnter(){
+                this.cambiaColore(this.appNomeDirett)
+            }
+
+            @HostListener('mouseleave') onMouseLeave(){
+                this.cambiaColore('transparent')
+            }
+
+        nel HTML del componente che utilizza la direttiva
+
+            <p> Siamo nell'HTML del componente </p>
+            <p [appNomeDirett]="varColoreDaTSdelComponente"> Ciao sono il paragrafo </p>
+
+        nel TS del componente che utilizza la direttiva
+
+            varColoreDaTSdelComponente = 'purple'
+
+        Ovviamente nel TS del componete è possibile gestire il valore di `varColoreDaTSdelComponente`
+        in modo dinamico in modo da trasferire valori diversi alla direttiva. Esempio
+
+        HTML del componente: radio button per selezionare il colore dell'evidenziatore
+
+            <h2> Scegli l'evidenziatore</h2>
+            <div>
+                <input type="radio" name="coloreEvid" (click)="CambiaColEvid('red')">Rosso
+                <input type="radio" name="coloreEvid" (click)="CambiaColEvid('pink')">Rosa
+                <input type="radio" name="coloreEvid" (click)="CambiaColEvid('blue')">Blu
+            </div>
+
+            <p [appNomeDirett]="varColoreDaTSdelComponente"> Ciao sono il paragrafo </p>
+
+        TS del componente
+
+            CambiaColEvid(colore: string){
+                this.varColoreDaTSdelComponente = colore
+            }
+
+    - aggiungere una seconda proprietà alla direttiva
+
+        ipotizziamo di voler definire un coloreEvidenz di default.
+        aggiungere un secondo @input() defaultColor = '' e modificare il listener del mouseenter
+
+            @input() defaultColor = ''
+
+            @HostListener('mouseenter') onMouseEnter(){
+                this.cambiaColore(this.appNomeDirett || this.defaultColor || 'purple')
+            }
+
+        => this.appNomeDirett arriva da varColoreDaTSdelComponente del TS del componente
+        => se varColoreDaTSdelComponente è vuoto allora this.appNomeDirett è vuoto e viene preso
+           this.defaultColor; se this.defaultColor è vuoto viene preso 'purple'
+
+        nel HTML del componente
+
+            <p [appNomeDirett]="varColoreDaTSdelComponente" defaultColor="blu"> Ciao sono il paragrafo </p>
+
+- Pipe (Lez. 21)
+    servono ad applicare delle variazioni alle String interpolation
+    in pratica la stringa viene passata ad una "funzione" che esegue una "variazione" alla striga
+
+    {{ title | uppercase }} => il contenuto di "title" viene convertito in maiuscolo
+
+    uppercase, lowercase
+    date => date: 'medium', date: 'shortTime', date: 'h:mm:ss'
+    decimal => number, number: '2.1-4'
+    percentage => percent, percent: '2.1-4'
+    currency => currency, currency: 'EUR', currency: 'EUR':code, currency: 'EUR':symbol:'2,1-2'
+    legame con il valore "LOCALE" di chi utilizza l'applicazione
+
+- Service (Lez. 22)
+    sono delle classi che possono essere "viste" da tutti i componenti: esempio un servizio può
+    contenere i dati (o recuperarli da un DB) e tutti i componenti li ricevono facendo
+    riferimento al servizio che li contiene (o gestisce)
+
+    per creare il servizio si utilizza il comando `ng c s nomeservizio`
+    il servizio è una classe con il decoratore @Injectable che indica dove il servizio
+    viene reso disponibile
+
+        @Injectable ({
+            providedIn: 'root' => questo servizio è disponibile a tutta la App
+        })
+
+     Nel file app.module.ts si possono indicare i servizi nella sezione "providers"
+
+     Nell'esempio con i dati questi devono essere posti vome variabili della classe
+
+        export class ServizioDatiService{
+
+            persone = [
+                {nome: "pippo", cognome: "Rossi", isOnline: true, color "red"}
+                {nome: "pluto", cognome: "Bianchi", isOnline: true, color "white"}
+                {nome: "paper", cognome: "Verdi", isOnline: true, color "green"}
+            ]
+
+            constructor() {}
+
+            getPersone() {
+                return this.persone
+            }
+        }
+
+    nel TS compopnente che deve utilizzare il servizio abbiamo
+
+        contructor(private servizioDatiRicevuti: ServizioDatiService) {} => ServizioDatiService deve essere importato
+
+        ngOnInit(): void {
+            console.log(this.servizioDatiRicevuti.persone) => posso accedere ai dati resi disponibili dal servizio
+            console.log(this.servizioDatiRicevuti.getPersone()) => stessa cosa con il metodo
+        }
+
+    stesso vale se nel servizio abbiamo un metodo
+
+- Routing (Lez. 23)
+    serve a spostarsi da una "pagina" all'altra ma trattandosi di "SinglePage Application"
+    questo sistema connette glòi indirizzi con i componenti da visualizzare
+    si genera con il comando `ng g module app-routing --flat --module=app` che crea il modulo
+    di routing nella radice della applicazione (--flat) e lo registra in app.module.ts
+
+    si tratta di una classe che diventa un modulo con il decoratore @NgModule che contiene una costante pubblica
+    che contiene un array di oggetti in cui vengono definite le route
+    nel decoratore c'è un import e un export legate al modulo di sistema RouteModule
+
+        const routes = [
+            {path: '', component:  HomeComponent}
+            {path: 'contatti', component:  ContattiComponent}
+            {path: 'about', component:  AboutComponent}
+            ]
+
+    nell'HTML del componete più esterno troviamo
+
+        <!-- questo è un poccolo menu che richiama gli specifici componenti ovvero le "pagine" fittizie
+        <a routerLink="/" style="margin-right:10px;">Home</a>
+        <a routerLink="aboute" style="margin-right:10px;">About</a>
+        <a routerLink="contact" style="margin-right:10px;">Contatti</a>
+
+        <router-outlet></router-outlet>
+
+- Routing CON PARAMETRI (Lez. 24)
+    nella route possiamo specificare dei paramentri che verranno poi gestiti dalla applicazione per
+    restituire specifici dati
+    qui abbiamo un componente Contatti che prende i sarti da SevizioDatiService e li mette in un array
+    locale "persone" e li mostra con un *ngFor; nel SevizioDatiService ci sono due metodi
+     - getPersone() restituisce tutto l'array; getPersona(index: number) restituisce un solo Contatti
+
+    nel modulo di routing troviamo le seguenti routes
+
+        const routes = [
+            {path: '', component:  HomeComponent}
+            {path: 'contatti', component:  ContattiComponent}
+            {path: 'contatti/:id', component:  ContattiComponent}
+            ]
+
+    nel TS di Contatti con `this.route.snapshot.paramMap.get('id')` otteniamo l'id indicato nell'URL
+    Esempio URL http://my-app.it/contatt/18 => this.route.snapshot.paramMap.get('id') restituisce 18
+
+        persone: any
+        persona: any
+        isProfile: boolean
+
+        constructor(private servizioDatiRicevuti: ServizioDatiService,
+                    private route: ActivatedRoute)
+
+        ngOnInit(){
+            if (this.servizioDatiRicevuti.getPersone('id')){
+                this.isProfile = true
+                this.persone = this.servizioDatiRicevuti.getPersone(parseInt(this.servizioDatiRicevuti.getPersone('id')!))
+            }else{
+                this.isProfile = false
+                this.persone = this.servizioDatiRicevuti.getPersone()
+            }
+        }
+
+        nell'esempio viene valutato se viene ricevuto il numero dell'id dall'URL:
+        se arriva l'id l'if risulta vero e viene mostrato un singolo profilo
+        se NON arriva l'id l'if risulta verofalso e viene mostrata la lista completa
+
+    nell HTML del componente
+
+        <div *ngIf="!isProfile; else profiloContattoSingolo>
+            <div *ngFor="let elemento of persone; index as i>
+                <a routerLink="/contatti/{{i}}" <p> {{elemento.nome}} {{elemento.cognome}}</p> </a>
+            </div>
+        <div>
+        <ng-template #profiloContattoSingolo>
+            <p> Profilo di {{persona.nome}} {{persona.cognome}}</p>
+        </ng-template>
+
+- Routing CON i "figli" (Lez. 25)
+    serve a collegare il routin con parametri tra componente Padre e figlio
+    l'esempio prende la situazione precedente per mostrare il singolo contatto a fianco alla lista
+    quando si clicca su un elemento della lista
+    per realizzarlo si crea un componente contatto che diventerà figlio del componente Contatti
+
+    nel TS di Contatti
+
+        persone: any
+
+        constructor(private servizioDatiRicevuti: ServizioDatiService)
+
+        ngOnInit(): void {
+            this.persone = this.servizioDatiRicevuti.getPersone()
+        }
+
+    nell'HTML di Contatti
+
+        <div style="display: flex">
+            <div *ngIf="!isProfile; else profiloContattoSingolo>
+                <div *ngFor="let elemento of persone; index as i>
+                    <a routerLink="/contatti/{{i}}" <p> {{elemento.nome}} {{elemento.cognome}}</p> </a>
+                </div>
+            <div>
+        </div>
+
+        <router-outlet></router-outlet> => per chiamare il figlio
+
+    nel TS del modulo di Routing
+
+            const routes = [
+                {path: '', component:  HomeComponent}
+                {path: 'contatti', component:  ContattiComponent' children: [
+                    {path: ':id', component:  ContattoComponent}
+                ] },
+            ];
+
+    nell'HTML di contatto
+
+            <p> Profilo di {{persona.nome}} {{persona.cognome}} </p>
+            <p> colore preferito:  {{persona.colore}} </p>
+
+    nel TS di Contatto
+
+        id: number
+        persone: any
+
+        constructor(private servizioDatiRicevuti: ServizioDatiService,
+                    private route: ActivatedRoute)
+
+        ngOnInit(): void {
+            this.route.paramMap.subscribe( (param: Parametro) => {
+                this.id = +param.get('id')
+                this.persona = this.servizioDatiRicevuti.getPersona(this.id)
+            })
+        }
+
+- Routing Errori e Redirect (Lez. 26)
+    nel routing possiamo mandare gli URL inesistenti ad un URL specifico
+    dove ci sarà uno specifico componente con il suo HTML
+
+    possiamo anche mandare gli indirizzi vuoti ad una specifica pagina
+
+    nel file del modulo del routing
+
+        const routes = [
+            {path: '', pathMatch: 'full', redirectTo: '/homepage' }
+            {path: 'homepage', component:  HomeComponent}
+            {path: 'contatti', component:  ContattiComponent' children: [
+                {path: ':id', component:  ContattoComponent}
+            ]},
+            {path: '/404', component:  NotFoundComponent}
+            {path: '**', redirectTo: '/404'}
+        ];
+
+- Routing Guard: proteggere l'accesso alle pagine
+    serve a limitare l'accesso a certe route (pagine) su determinate condizioni:
+    - quando sono loggato vedo menù che altrimenti non sarebbero visibili
+    - il venditore (ruolo di un utente) non accede ai menu amministrativi
 
 
 
+- Observable (Lez. 28)
 
+- Form (Lez. 29-30)
 
-- Data Binding ed eventi
-- Direttive
-- Pipe
-- Service
-- Routing
-- Observable
-- Form
-- Modulo http
-- Registrazione, login e logout
+- Modulo http (Lez. 31)
 
-- impostare un app Desktop
-- deploy online
+- Inserire/legger/modificare/cancellare dati nel/dal DB (Lez. 32-33-34-35)
+
+- Registrazione (Lez. 36)
+
+- Login e logout (Lez. 37)
+
+- impostare un app Desktop (Lez. 38)
+
+- deploy online (Lez. 39)
