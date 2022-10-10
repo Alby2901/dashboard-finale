@@ -1,7 +1,7 @@
 Corso Angular
 (i comanti specifici sono racchiusi da backtip => `comando`)
 
-Requisiti: typescripta, javascript, html, css
+Requisiti: Typescript (TS), Javascript, HTML , CSS
 
 - Introduzione a Angular
     - installare node (su linux)
@@ -587,13 +587,200 @@ Requisiti: typescripta, javascript, html, css
     - quando sono loggato vedo menù che altrimenti non sarebbero visibili
     - il venditore (ruolo di un utente) non accede ai menu amministrativi
 
+    ESEMPIO con simulazione di utente loggato oppure no
+    creare un servizio "auth" `ng g s auth/auth` (viene creato in una cartella "auth")
+    nel TS dell'export della classe mettiamo una variabile e un metodo...
 
+        isLoggedIn = false
+
+        constructor(){ }
+
+        isAuthenticated(){
+          return this.isLoggedIn
+        }
+
+    creare la "guard" con `ng g guard  auth/auth` implementatdo l'interfaccia "CanActivate"
+    nel file auth.guard.ts che viene creato aggiungiamo il contruttore per inserire
+    il servizio precedentemente creato: è un servizio utilizzato all'interno di un altro servizio
+    nal TS avremo... (qui sono mostrate solo le variazioni)
+
+        constructor(){private servizioAuthService: AuthService }
+
+        canActivate(
+          route: ActivatedRouteSnapshot.
+          state: RouterStateSnapshot) {
+            return this.servizioAuthService.isAuthenticated();
+          }
+        )
+
+    nel Ts del routing (importare AuthGuard)
+
+        const routes = [
+            {path: '', pathMatch: 'full', redirectTo: '/homepage' }
+            {path: 'homepage', component:  HomeComponent}
+            {path: 'contatti', component:  ContattiComponent', canActivate:[AuthGuard], children: [
+                {path: ':id', component:  ContattoComponent}
+            ]},
+            {path: '/404', component:  NotFoundComponent}
+            {path: '**', redirectTo: '/404'}
+        ];
+
+    In questa situazione, se isLoggedIn = false, "Contatti" non si aprira e viceversa!
+
+    ESEMPIO con ruolo dell'utente
+    nel servizio "auth" aggiungere la variabile `isAdmin = false`
+    e il metodo `isRoleAdmin(){ return this.asAdmin }`
+
+    nel TS auth.guard.ts implementare anche l'interfaccia "CanActivateChild" in questo modo
+
+        canActivateChild(
+          route: ActivatedRouteSnapshot.
+          state: RouterStateSnapshot) {
+            return this.servizioAuthService.isRoleAdmin();
+        }
+
+    nel Ts del routing (importare AuthGuard)
+
+        const routes = [
+            {path: '', pathMatch: 'full', redirectTo: '/homepage' }
+            {path: 'homepage', component:  HomeComponent}
+            {path: 'contatti', component:  ContattiComponent',
+                    canActivate:[AuthGuard],
+                    canActivateChild:[AuthGuard], children: [
+                {path: ':id', component:  ContattoComponent}
+            ]},
+            {path: '/404', component:  NotFoundComponent}
+            {path: '**', redirectTo: '/404'}
+        ];
+
+    In questa situazione, se `isAdmin = false`, i dati specifici dei Contatti non si apriranno e viceversa!
 
 - Observable (Lez. 28)
+    L'observable è un "sistema" che rimane ad osservare qualcosa e ne restituisce la variazione
+    per ottenere dati dall'observable lo si deve sottoscrivere (subscribe),
+    quando non si è più interessati ai suoi dati ci si deve disiscrivere (unsubscribe).
+    Questa ultima azione viene spesso correlata alla distruzuione del componente ( ngOnDestroy() )
+    é possibile creare un observable totalmente in typescript in questo modo
 
-- Form (Lez. 29-30)
+       ngOnInit(){
+        new Observable( (observer) => {
+          let count = 0:
+          setInterval( () => {
+            observer.next(count);
+            count++;
+          }, 1000);
+        }).subscibe( (numero) => {
+          console.log(numero);
+        });
+        }
+
+    questo codice crea un observable che manda in consol numeri crescenti da 0
+    si può realizzare in Angular con `interval(millisecond)` molto più facilmente...
+
+        ngOnInit(){
+          interval(1000).subscribe( numero => {
+            console.log(numero);
+          });
+        }
+
+    per interrompere la sottoscrizione si deve assegnare l'observable ad una variabile e pu
+
+        sottoscrizione: any
+
+        ngOnInit(){
+          this.sottoscrizione = interval(1000).subscribe( numero => {
+            console.log(numero);
+          });
+        }
+
+        ngOnDestroy(){
+          this.sottoscrizione.unsubscribe()
+        }
+
+- FORM: template driven form (Lez. 29)
+    sono form gestiti principalmente lato HTML..
+     - creare il form e attribuire una Variabile template e un evento legati ad Angular
+       `#homeform="ngForm"` fa sì che angular passo poi al TS le informazioni logiche del form
+       se questa proprietà non ci fosse `suInvia(homeform)` restuirebbe l'elemento HTML "form"
+     - creare il bottone per l'invio
+     - aggiungere agli elementi del modulo le proprietà HTML classiche: name, type
+     - aggiungere agli elementi del modulo la proprietà "ngModule"
+
+        <form #homeform="ngForm" (ngSubmit)="suInvia(homeform)">
+          ...
+          <input type="text" name="nome" ngModel>
+          ...
+          <input type="email" name="e-mail" ngModel>
+          ...
+          <button type="submit"> Invia </button>
+        </form>
+
+    nell'TS...
+
+         suInvia(datiForm: ngForm){
+
+         }
+
+    il form e ogni elemeto ha degli stati: valido, toccato, sporco
+    e delle proprietà per la validazione: richiesto (obbligatorio), email (deve essere un indirizzo email)
+
+    <input type="email" name="e-mail" ngModel required email>
+
+    si può legare lo "stato" del bottone allo stato del form:
+
+          <button type="submit" [disabled]="!homeform.valid"> Invia </button>
+
+    si può andare a gestire la variazione del CSS sulla base della variazione
+    delle classi che Angular assegna agli elementi quando cambiano stato
+    nel CSS...
+
+          input.ng-touched.ng-invalid{
+            background-colort: red !important;
+          }
+
+          input.ng-valid{
+            background-colort: green !important;
+          }
+
+- FORM: reactive form (Lez. 30)
+    sono form classici dove la gestione avviene principalmente nel TS
+    (nell'app.module.ts importare "ReactiveFormModule")
+    nel componente creare una variabile di tipo "formGroup" e ciò che serve
+    per il collegamento con il form HTML e per la validazione
+
+          homeform: ForgGroup
+
+          ngOnInit(){
+            this.homeform ) new FormGroupe({
+              nome: new FormControl('Luca', Validators.required),
+              email: new FormControl(null, [Validators.required, , Validators.email]),
+              colore: new FormControl()
+            })
+          }
+
+    nell HTML...
+
+        <form [formGroup]="homeForm" (ngSubmit)="suInvia(homeform)">
+          ...
+          <input type="text" formControlName="nome">
+          <p *nfIF="!homeForm.get('nome').valid && homeForm.get('nome').touched"> Inserisci un nome </p>
+          ...
+          <input type="email" name="e-mail" formControlName="email">
+          ...
+          <button type="submit" [disabled]="!homeform.valid"> Invia </button>
+        </form>
+
+    il paragrafo "<p>" verrà visualizzato se il campo imput del nome
+    non è valido ed è risulta "toccato"
 
 - Modulo http (Lez. 31)
+    spiegazione dell funzionamento di una moderna APP
+
+        frontend (angular, react,...) <=> http <=> backend(java, php, node, ...) <=> database
+
+    aggiungere al app.module.ts il modulo HttpClientModule (import from '@angular/common/http')
+
+    creazione di un progetto e di un database in Firebase (google)
 
 - Inserire/legger/modificare/cancellare dati nel/dal DB (Lez. 32-33-34-35)
 
