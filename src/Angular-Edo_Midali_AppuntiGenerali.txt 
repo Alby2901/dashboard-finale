@@ -718,7 +718,7 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
     nell'TS...
 
          suInvia(datiForm: ngForm){
-
+            console.log(datiForm)
          }
 
     il form e ogni elemeto ha degli stati: valido, toccato, sporco
@@ -782,7 +782,109 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
 
     creazione di un progetto e di un database in Firebase (google)
 
-- Inserire/legger/modificare/cancellare dati nel/dal DB (Lez. 32-33-34-35)
+- Inserire/leggere/modificare/cancellare dati nel/dal DB (Lez. 32-33-34-35)
+    per la gestione delle connessioni con il backend è opportuno utilizzare i servizi: probabilmente
+    creare un servizio per ogni tipologia di dato è buona cosa
+
+    nel construttore del servizio (qui denominato FirebaseService) creare la variabile di connessione al modulo HttpClient
+    creare i metodi per parlare con il backend per inserire (POST), leggere (GET),
+    modificare (PUT), cancellare(DEL) i dati
+
+    INSERIMENTO
+
+        constructor(private http: HttpClient)
+
+        insertPersona(url:stringa, body: {}){
+            return this.http.post(url,body)
+        }
+
+    la chiamata post restituisce un observable e quindi nel componente che utilizzerà il servizio dovremo sottoscrivere
+    tale observable
+    nel TS del componente inseriamo il servizi nel costruttore, e nel metodo ngOnInit() (oppure dove vogliamo
+    chiamare il backend) inseriamo la chiamata e i dati
+
+        constructor(private firebase: FirebaseService)
+
+        ngOnInit(){
+            ...
+            this.firebase.insertPersona(
+                'http://....(url di chiamata al backend per connessione al db).../persone.json',
+                { nome: 'Luca', email: 'lucarossi@gimmail.com'}
+                ).subscribe( data => {
+                    console.log(data)
+                })
+            )
+        }
+
+    nell'esempio i dati sono "hardcodati" (inseriti direttamente nel codice) ma riprendendo l'utilizzo del form
+    si possono prendere dal form (qui utilizziamo il reactive form)
+
+        homeform: ForgGroup
+
+        constructor(private firebase: FirebaseService)
+
+        ngOnInit(){
+            this.homeform ) new FormGroupe({
+              nome: new FormControl('Luca', Validators.required),
+              email: new FormControl(null, [Validators.required, , Validators.email]),
+              colore: new FormControl()
+            })
+        }
+
+        suInvia(datiForm: ngForm){
+                        this.firebase.insertPersona(
+                'http://....(url di chiamata al backend per connessione al db).../persone.json',
+
+                { nome: this.homeform.value.nome, email: this.homeform.value.email}
+
+                ).subscribe( data => {
+                    console.log(data)
+                })
+            )
+        }
+
+    LETTURA (GET)
+    per la lettura creiamo il metodo nel FirebaseService e poi otteniamo i dati nel componente
+    nel servizio
+
+        constructor(private http: HttpClient)
+
+        insertPersona(url:stringa, body: {}){
+            return this.http.post(url,body)
+        }
+
+        ottieniPersone(url:stringa){
+            return this.http.get(url)
+        }
+
+    nel TS del componente che mostra i dati (per esempio in contatti)
+
+        persone: any
+
+        constructor(private firebase: FirebaseService)
+
+        ngOnInit(){
+            this.firebase.ottieniPersone(
+                'http://....(url di chiamata al backend per connessione al db).../persone.json'
+            ). subscribe ( data => {
+                console.log(data)
+                this.persone = Object.keys(data).map( (key) => { return data[key] } )
+                console.log(this.persone)
+            })
+        }
+
+    Il backend Google Firebase restituisce un oggetto che contiene gli id dei record che a loro
+    volta contengono i campi e i dati, per questo la "map" crea un nuovo oggetto "eliminado" i record_id
+
+        {record_id1: {nome: 'pippo', email: 'pippo@pippo.it'} }
+        {record_id2: {nome: 'pluto', email: 'pluto@pluto.it'} }
+
+    la map restituisce un array
+
+        [{nome: 'pippo', email: 'pippo@pippo.it'}
+        {nome: 'pluto', email: 'pluto@pluto.it'}}       ]
+
+
 
 - Registrazione (Lez. 36)
 
