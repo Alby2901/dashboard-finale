@@ -794,7 +794,7 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
 
         constructor(private http: HttpClient)
 
-        insertPersona(url:stringa, body: {}){
+        insertPersona(url:string, body: {}){
             return this.http.post(url,body)
         }
 
@@ -849,11 +849,11 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
 
         constructor(private http: HttpClient)
 
-        insertPersona(url:stringa, body: {}){
+        insertPersona(url:string, body: {}){
             return this.http.post(url,body)
         }
 
-        ottieniPersone(url:stringa){
+        ottieniPersone(url:string){
             return this.http.get(url)
         }
 
@@ -866,9 +866,12 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
         ngOnInit(){
             this.firebase.ottieniPersone(
                 'http://....(url di chiamata al backend per connessione al db).../persone.json'
-            ). subscribe ( data => {
+            ).subscribe ( data => {
                 console.log(data)
-                this.persone = Object.keys(data).map( (key) => { return data[key] } )
+                this.persone = Object.keys(data).map( (key) => {
+                  data[key]['id'] = key;
+                  return data[key];
+                 } )
                 console.log(this.persone)
             })
         }
@@ -882,14 +885,108 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
     la map restituisce un array
 
         [{nome: 'pippo', email: 'pippo@pippo.it'}
-        {nome: 'pluto', email: 'pluto@pluto.it'}}       ]
+        {nome: 'pluto', email: 'pluto@pluto.it'}
+        ]
 
+     `data[key]['id'] = key` questo codice aggiunge all'oggetto un campo "id" con dentro l'id del record
 
+        [{nome: 'pippo', email: 'pippo@pippo.it', id: 'jajdshb9s7fa89f97'}
+        {nome: 'pluto', email: 'pluto@pluto.it', id: '34knk234l234klj2l'}
+        ]
+
+    ELIMINAZIONE (DELETE)
+    per l'ELIMINAZIONE creiamo il metodo nel FirebaseService e poi ELIMINIAMO
+    i dati con un bottone nel componente
+    nel servizio...
+
+        constructor(private http: HttpClient)
+
+        insertPersona(url:string, body: {}){
+            return this.http.post(url,body)
+        }
+
+        ottieniPersone(url:string){
+            return this.http.get(url)
+        }
+
+        eliminaPersona(url:string, id:string){
+            // return this.http.delete(url+'/'+id+'.json')
+            return this.http.delete(`${url}/${id}.json`) => metodo con backtips
+        }
+
+    nel TS del componente checontiene il bottone per eliminare il record (per esempio in contatto)
+
+        persone: any
+
+        constructor(private firebase: FirebaseService)
+
+        suEliminazione(){
+            this.firebase.eliminaPersone(
+                'http://....(url di chiamata al backend per connessione al db).../persone',
+                '-kja46gd6645fjg6kjd'
+            ).subscribe ( data => {
+                console.log(data)
+            })
+        }
+
+    Questo esempio contiene l'id del record harcoded, va gestito con
+    riferimento all'Id del record (vedi id riportato nell'array ottenuto con GET)
+    `suEliminazione()` questo metodo viene richiamato sul click del bottone "Elimina"
+
+        <button type="submit" (ONCLICK)="suEliminazion()"> ELIMINA! </button>
+
+    MODIFICA (PATCH o PUT)
+    PATCH permette di inviare solo pa parte modificata dei dati
+    PUT vuole invece tutto il nuovo record completo modificato dove necessario
+    per la modifica creiamo il metodo nel FirebaseService e poi creiamo
+    il metodo che invia i dati modificatinuovi
+    i dati con un bottone nel componente
+    nel servizio...
+
+        constructor(private http: HttpClient)
+
+        insertPersona(url:string, body: {}){
+            return this.http.post(url,body)
+        }
+
+        ottieniPersone(url:string){
+            return this.http.get(url)
+        }
+
+        eliminaPersona(url:string, id:string){
+            // return this.http.delete(url+'/'+id+'.json')
+            return this.http.delete(`${url}/${id}.json`) => metodo con backtips
+        }
+
+        modificaPersona(url:string, id:string, body){
+          return this.http.patch(`${url}/${id}.json`, body)
+        }
+
+    nel TS del componente che contiene i dati per la modifica (per esempio form in contatto precompilato)
+
+        persone: any
+
+        constructor(private firebase: FirebaseService)
+
+        suModifica(id){
+            this.firebase.modificaPersona(
+                'http://....(url di chiamata al backend per connessione al db).../persone',
+                '-kja46gd6645fjg6kjd',
+                {email: prpva@prova.it}
+            ).subscribe ( data => {
+                console.log(data)
+            })
+        }
+    Questo esempio contiene l'id del record harcoded che va invece gestito con
+    riferimento all'id del record (vedi id riportato nell'array ottenuto con GET)
 
 - Registrazione (Lez. 36)
 
+
 - Login e logout (Lez. 37)
 
+
 - impostare un app Desktop (Lez. 38)
+
 
 - deploy online (Lez. 39)
