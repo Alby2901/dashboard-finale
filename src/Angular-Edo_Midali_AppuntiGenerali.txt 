@@ -981,9 +981,192 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
     riferimento all'id del record (vedi id riportato nell'array ottenuto con GET)
 
 - Registrazione (Lez. 36)
+    In questa situazione avendo a scelto come backend Firebase, utilizziamo le sue specifiche
+    funzionalità per gestire la registrazione e il controllo del login degli utenti
+    creiamo un componente per la registrazione nel quale avremo un form di tipo Template driven Form
+    creare un componente "registrazione" con il solito `ng g c componenti/registrazione`
+    registrare nel routing la pagina
 
+        const routes = [
+            {path: '', pathMatch: 'full', redirectTo: '/homepage' }
+            {path: 'homepage', component:  HomeComponent}
+            ...
+            {path: 'registrazione', component:  RegistrazioneComponent}
+            ...
+        ];
+
+    nell'HTML del componente registrazione creiamo il form
+
+        <form #homeform="ngForm" (ngSubmit)="suInvia(homeform)">
+          ...
+          <input type="email" name="e-mail" ngModel required>
+          ...
+          <input type="password" name="password" ngModel required>
+          ...
+          <button type="submit" [disabled]="!homeForm.valid"> Invia </button>
+        </form>
+
+  nel servizio auth.service creato precedentemente aggiungiamo il metodo per la registrazione
+  attivando il moduli http
+
+        const API_KEY = '123456789qwerty'
+        url = 'https://... (url preso da firebase autenticax. email-password) ...
+               .../account/signup=key=${this.API_KEY}'
+        isLoggedIn = false
+        isAdmin = false
+
+        constructor(private http: HttpClient){ }
+
+        isAuthenticated(){
+          return this.isLoggedIn
+        }
+
+        isRoleAdmin(){
+          return this.asAdmin
+        }
+
+        registrazione(body){
+          return this.http.post(this.url, body)
+        }
+
+    APY_KEY e url si ricavano dal progetto di firebase
+
+    nell'TS del componente registrazione creiamo il metodo "suInvia()" invocato
+    dal pulsante nel form (e dal form stesso!)
+
+        utente: {};
+
+        constructor(private auth: AuthServvice)
+
+        suInvia(form: NgForm){
+          const email = form.value.email
+          const password = form.value.password
+          this.utente = {email: email, password: password, returnSecureToken: true}
+
+          this.auth.registrazione(utente).subscribe( (data) => {
+            console.log(data)
+          })
+
+          form.reset()
+        }
+
+    ATTENZIONE! in fire base nel DB si devono modificare le regole
+
+        {
+          "rules": {
+              ".read": "auth!= null",  // 2022-11-9
+              ".write": "auth!= null",  // 2022-11-9
+          }
+        }
 
 - Login e logout (Lez. 37)
+    creiamo un componete per il login `ng g c componenti/login`
+    aggiungiamolo nel routing
+
+        const routes = [
+            {path: '', pathMatch: 'full', redirectTo: '/homepage' }
+            {path: 'homepage', component:  HomeComponent}
+            ...
+            {path: 'login', component:  LoginComponent}
+            ...
+        ];
+
+    nell'HTML del componente login creiamo il form (in questo caso è uguale a quello di registrazione)
+
+        <form #homeform="ngForm" (ngSubmit)="suInvia(homeform)">
+          ...
+          <input type="email" name="e-mail" ngModel required>
+          ...
+          <input type="password" name="password" ngModel required>
+          ...
+          <button type="submit" [disabled]="!homeForm.valid"> Invia </button>
+        </form>
+
+    nell'TS del componente login creiamo il metodo "suInvia()" invocato
+        dal pulsante nel form (e dal form stesso!)
+
+            utente: {};
+
+            constructor(private auth: AuthServvice)
+
+            suInvia(form: NgForm){
+              const email = form.value.email
+              const password = form.value.password
+              this.auth.login(email, password).subscribe( (data:any) => {
+                console.log(data)
+
+                const expirationDate = new Date(new Date().getTime() + data.expiresIn * 1000)
+                this.auth.creaUser(data.email, data.localid, data.idToken, data.expiresIn)
+                console.log(this.auth.user)
+
+                localStorage.setItem('user', JSON.stringify(this.auth.user)
+              })
+
+              form.reset()
+            }
+
+  nel servizio auth.service creato precedentemente aggiungiamo il metodo per il login
+  attivando il moduli http (il metoro registrazione è stato leggermente modificato)
+
+        const API_KEY = '123456789qwerty'
+        urlRegistr = 'https://identitytoolkit.googleapis.com/v1/
+                      accounts:signUp?key=${this.API_KEY}'
+
+        urlLogin = 'https://identitytoolkit.googleapis.com/v1/
+                    accounts:signInWithPassword?key=${this.API_KEY}'
+
+        isLoggedIn = false
+        isAdmin = false
+
+        user: Utente
+
+        constructor(private http: HttpClient){ }
+
+        isAuthenticated(){
+          return this.isLoggedIn
+        }
+
+        isRoleAdmin(){
+          return this.asAdmin
+        }
+
+        creaUser(email: string, id: string, token: string, expDate: date){
+          this.user = new Utente(email, id, token, expDate)
+        }
+
+        registrazione(email: stringa, password: stringa){
+          return this.http.post(this.urlRegistr, {email: email, password: password, returnSecureToken: true})
+        }
+
+        login(email: stringa, password: stringa){
+          return this.http.post(this.urlLogin, {email: email, password: password, returnSecureToken: true})
+        }
+
+    quando mandiamo la richiesta di login al backend riceviamo una serie di dati tra cui
+    i dati dell'utente e il token (e la sua validità temporale)
+    per gestire questi dati abbiamo bisogno di una struttura utente:
+    la creiamo attraverlo la creazione di un "modello", un file utente.model.ts
+    il modello utente è la struttura dei dati relativi a un utente loggato
+    nel file utente.model.ts...
+
+        export class utente{
+          constructor(
+            public email: string,
+            public id: string,
+            private _token. string,
+            private _expirationDate: date
+          ){}
+
+          get token(){
+            if (this._expirationDate || new Date() > this._expirationDate){
+              return null
+            }
+            return this.token
+          }
+        }
+
+
+
 
 
 - impostare un app Desktop (Lez. 38)
