@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FirebaseService } from 'src/app/servizi/firebase.service';
 import { ServizioDatiElementiService } from '../../servizi/servizio-dati-elementi.service';
 @Component({
   selector: 'app-pagina1',
@@ -9,15 +10,60 @@ import { ServizioDatiElementiService } from '../../servizi/servizio-dati-element
 export class Pagina1Component implements OnInit {
   // dataSource viene utilizzata nella tabella
   // e riceve i dati dal servizio "serviziodatielementi"
-  dataSource = this.serviziodatielementi.dataSource;
+  dataSourceLoc = this.serviziodatielementi.dataSource;
+  dataSourceLocDB:any
 
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  displayedColumns2: string[] = ['name', 'symbol'];
 
-
-  constructor(private serviziodatielementi: ServizioDatiElementiService) { }
+  constructor(private serviziodatielementi: ServizioDatiElementiService,
+              private firebaseDB: FirebaseService) { }
 
   ngOnInit(): void {
-    // console.log(this.serviziodatielementi.dataSource)
+    console.log('dataSourceLoc: ' + this.dataSourceLoc);
+    console.log('dataSourceLocDB0: ' + this.dataSourceLocDB)
+
+    this.firebaseDB.leggiTabellaDB('elementi').subscribe( data => {
+      console.log('data: ' + data)
+      if (data){
+        this.dataSourceLocDB = data;
+        this.dataSourceLocDB = Object.keys(this.dataSourceLocDB).map( (key) => {
+        this.dataSourceLocDB[key]['id'] = key;
+        return this.dataSourceLocDB[key];
+        });
+      }else{
+        this.dataSourceLocDB = ''
+      }
+
+      console.log('dataSourceLocDB1: ' + this.dataSourceLocDB)
+    })
+    console.log('dataSourceLocDB2: ' + this.dataSourceLocDB)
   }
 
-}
+  controllo(){
+    // console.log('dataSourceLocDB3: ' + this.dataSourceLocDB)
+    // console.log('dataSourceLocDB4: ' + this.dataSourceLocDB)
+  }
+
+  inserisciElemento(){
+    this.firebaseDB.inserisciElementoDB(
+      'elementi',
+      {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H' }
+    ).subscribe( (data) => {
+      console.log(data);
+    })
+  }
+
+  riempiTabella(){
+      this.serviziodatielementi.dataSource.forEach( element => {
+        this.firebaseDB.inserisciElementoDB(
+          'elementi',
+          element
+        ).subscribe( (data) => {
+          console.log(data);
+        })
+      });
+      console.log('pippo');
+  }
+
+  }

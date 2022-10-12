@@ -783,12 +783,12 @@ Requisiti: Typescript (TS), Javascript, HTML , CSS
     creazione di un progetto e di un database in Firebase (google)
 
 - Inserire/leggere/modificare/cancellare dati nel/dal DB (Lez. 32-33-34-35)
-    per la gestione delle connessioni con il backend è opportuno utilizzare i servizi: probabilmente
-    creare un servizio per ogni tipologia di dato è buona cosa
+    per la gestione delle connessioni con il backend è opportuno utilizzare i servizi:
+    probabilmente creare un servizio per ogni tipologia di dato è buona cosa
 
-    nel construttore del servizio (qui denominato FirebaseService) creare la variabile di connessione al modulo HttpClient
-    creare i metodi per parlare con il backend per inserire (POST), leggere (GET),
-    modificare (PUT), cancellare(DEL) i dati
+    nel construttore del servizio (qui denominato FirebaseService) creare la variabile di
+    connessione al modulo HttpClient, creare i metodi per parlare con il backend per
+    inserire (POST), leggere (GET), modificare (PATCH o PUT), cancellare(DEL) i dati
 
     INSERIMENTO
 
