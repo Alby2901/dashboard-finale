@@ -21,8 +21,14 @@ export class Pagina1Component implements OnInit {
 
   ngOnInit(): void {
     console.log('dataSourceLoc: ' + JSON.stringify(this.dataSourceLoc));
+    console.log('dataSourceLoc OGGETTO inizio ');
+    console.log(this.dataSourceLoc);
+    console.log('dataSourceLoc OGGETTO fine ');
     console.log('dataSourceLoc: ' + this.dataSourceLoc);
-    console.log('dataSourceLocDB0: ' + this.dataSourceLocDB)
+    console.log('dataSourceLocDB OGGETTO inizio ');
+    console.log(console.log(this.dataSourceLocDB));
+    console.log('dataSourceLocDB OGGETTO fine ');
+
 
     this.firebaseDB.leggiTabellaDB('elementi').subscribe( data => {
       console.log('data: ' + data)
