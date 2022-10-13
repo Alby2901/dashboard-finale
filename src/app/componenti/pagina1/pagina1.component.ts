@@ -20,6 +20,7 @@ export class Pagina1Component implements OnInit {
               private firebaseDB: FirebaseService) { }
 
   ngOnInit(): void {
+    console.log('dataSourceLoc: ' + JSON.stringify(this.dataSourceLoc));
     console.log('dataSourceLoc: ' + this.dataSourceLoc);
     console.log('dataSourceLocDB0: ' + this.dataSourceLocDB)
 
