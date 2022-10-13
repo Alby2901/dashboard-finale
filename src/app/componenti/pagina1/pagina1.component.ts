@@ -13,6 +13,8 @@ export class Pagina1Component implements OnInit {
   dataSourceLoc = this.serviziodatielementi.dataSource;
   dataSourceLocDB:any
 
+  mesg: any
+
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   displayedColumns2: string[] = ['name', 'symbol'];
 
@@ -20,15 +22,7 @@ export class Pagina1Component implements OnInit {
               private firebaseDB: FirebaseService) { }
 
   ngOnInit(): void {
-    console.log('dataSourceLoc: ' + JSON.stringify(this.dataSourceLoc));
-    console.log('dataSourceLoc OGGETTO inizio ');
-    console.log(this.dataSourceLoc);
-    console.log('dataSourceLoc OGGETTO fine ');
-    console.log('dataSourceLoc: ' + this.dataSourceLoc);
-    console.log('dataSourceLocDB OGGETTO inizio ');
-    console.log(console.log(this.dataSourceLocDB));
-    console.log('dataSourceLocDB OGGETTO fine ');
-
+    console.log('dataSourceLoc: ', this.dataSourceLoc);
 
     this.firebaseDB.leggiTabellaDB('elementi').subscribe( data => {
       console.log('data: ' + data)
@@ -42,9 +36,9 @@ export class Pagina1Component implements OnInit {
         this.dataSourceLocDB = ''
       }
 
-      console.log('dataSourceLocDB1: ' + this.dataSourceLocDB)
+      console.log('dataSourceLocDB1: ', this.dataSourceLocDB)
     })
-    console.log('dataSourceLocDB2: ' + this.dataSourceLocDB)
+    console.log('dataSourceLocDB2: ', this.dataSourceLocDB)
   }
 
   controllo(){
@@ -73,4 +67,12 @@ export class Pagina1Component implements OnInit {
       console.log('pippo');
   }
 
+  EliminaTabella(){
+      this.mesg = this.firebaseDB.eliminaTabella(
+        'elementi').subscribe( (data) => {
+        console.log(data);
+      });
+      console.log('messaggio di ritorno', this.mesg);
   }
+
+}

@@ -36,6 +36,7 @@
 <button mat-raised-button color="primary" (click)="inserisciElemento()">Inserisci nuovo elemento</button>
 <button mat-raised-button color="primary" (click)="riempiTabella()">Riempi dati iniziali</button>
 <button mat-raised-button color="primary" (click)="controllo()">Comtrollo</button>
+<button mat-raised-button color="primary" (click)="EliminaTabella()">EliminaTabella</button>
 
 <section>
   <table *ngIf="dataSourceLocDB == '' ? false : true" mat-table [dataSource]="dataSourceLocDB" class="mat-elevation-z8">

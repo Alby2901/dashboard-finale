@@ -19,6 +19,10 @@ export class FirebaseService {
 
   leggiTabellaDB(tabella: string){
     return this.http.get(`${this.urlDB}/${tabella}.json`)
-}
+  }
+
+  eliminaTabella(tabella: string){
+    return this.http.delete(`${this.urlDB}/${tabella}.json`)
+  }
 
 }
