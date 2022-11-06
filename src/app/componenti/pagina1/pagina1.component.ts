@@ -42,7 +42,7 @@ export class Pagina1Component implements OnInit {
   }
 
   controllo(){
-    // console.log('dataSourceLocDB3: ' + this.dataSourceLocDB)
+    console.log('dataSourceLocDB3: ' + this.dataSourceLocDB)
     // console.log('dataSourceLocDB4: ' + this.dataSourceLocDB)
   }
 
